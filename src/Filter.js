@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { FilterContext } from "./contexts";
 
 const Filter = ({thisFilter}) => {
-  const filterContext = useContext(filterContext);
+  const filterContext = useContext(FilterContext);
 
   return ( 
     <li>
