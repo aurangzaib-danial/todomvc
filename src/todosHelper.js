@@ -28,6 +28,15 @@ export function todosReducer(state, action) {
         return {...t, isCompleted: false};
       });
     }
+    case "updateContent": {
+      const newTodos = state.map(todo => {
+        if (todo.id === action.id) {
+          return { ...todo, content: action.content };
+        }
+        return todo;
+      });
+      return newTodos;
+    }
   }
 }
 

@@ -1,8 +1,11 @@
-import { useContext } from "react";
+import { useContext, useState, useRef } from "react";
 import { DispatchContext } from "./contexts";
+import { flushSync } from "react-dom";
 
 const Todo = ({id, content, isCompleted}) => {
   const dispatch = useContext(DispatchContext);
+  const [status, setStatus] = useState("readOnly");
+  const inputRef = useRef(null);
 
   function handleCheck() {
     dispatch({
@@ -18,8 +21,31 @@ const Todo = ({id, content, isCompleted}) => {
     });
   }
 
+  function handleChange(e) {
+    dispatch({
+      type: "updateContent",
+      content: e.target.value,
+      id
+    });
+  }
+
   return (
-    <li className={isCompleted ? "completed" : ""}>
+    <li 
+      className={(isCompleted ? "completed" : "") + (status === "editing" ? " editing" : "")} 
+      onDoubleClick={()=> { 
+        flushSync(() => {
+          setStatus("editing");
+        });
+        inputRef.current.focus();
+      }}
+      onBlur={(e) => {
+        if (status === "editing") {
+          setStatus("readOnly");
+          if (e.target.value === "") {
+            handleDestroy();
+          }
+        }
+      }}>
       <div className="view">
         <input
           className="toggle"
@@ -29,6 +55,7 @@ const Todo = ({id, content, isCompleted}) => {
         <label>{ content }</label>
         <button className="destroy" onClick={handleDestroy}></button>
       </div>
+      {status === "editing" && <input className="edit" ref={inputRef} value={content} onChange={handleChange} />}
     </li>
   );
 }
